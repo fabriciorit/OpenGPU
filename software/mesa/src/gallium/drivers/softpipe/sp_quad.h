@@ -1,5 +1,5 @@
 /**************************************************************************
- * 
+ *
  * Copyright 2007 VMware, Inc.
  * All Rights Reserved.
  *
@@ -10,11 +10,11 @@
  * distribute, sub license, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice (including the
  * next paragraph) shall be included in all copies or substantial portions
  * of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
  * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.
@@ -22,7 +22,7 @@
  * ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  **************************************************************************/
 
 /* Authors:  Keith Whitwell <keithw@vmware.com>
@@ -93,7 +93,7 @@ struct quad_header_output
 
 /**
  * Encodes everything we need to know about a 2x2 pixel block.  Uses
- * "Channel-Serial" or "SoA" layout.  
+ * "Channel-Serial" or "SoA" layout.
  */
 struct quad_header {
    struct quad_header_input input;
@@ -105,5 +105,19 @@ struct quad_header {
    const struct tgsi_interp_coef *posCoef;
    const struct tgsi_interp_coef *coef;
 };
+
+//--OGPU
+struct ogpu_quad_list_item
+{
+    struct quad_header **quad_ptrs_list;
+    unsigned nr;
+};
+
+struct quad_header ogpu_quads[1024];
+struct quad_header *ogpu_quad_ptrs[1024];
+struct ogpu_quad_list_item ogpu_list[128];
+unsigned ogpu_q;
+unsigned ogpu_list_q;
+//
 
 #endif /* SP_QUAD_H */

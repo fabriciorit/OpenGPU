@@ -46,7 +46,6 @@
 #define DEBUG_VERTS 0
 #define DEBUG_FRAGS 0
 
-
 /**
  * Triangle edge info
  */
@@ -132,10 +131,10 @@ quad_clip(struct setup_context *setup, struct quad_header *quad)
    const int minx = (int) cliprect->minx;
    const int maxx = (int) cliprect->maxx;
    const int miny = (int) cliprect->miny;
-   const int maxy = (int) cliprect->maxy;
+    const int maxy = (int) cliprect->maxy;
 
-   if (quad->input.x0 >= maxx ||
-       quad->input.y0 >= maxy ||
+    if (quad->input.x0 >= maxx ||
+    quad->input.y0 >= maxy ||
        quad->input.x0 + 1 < minx ||
        quad->input.y0 + 1 < miny) {
       /* totally clipped */
@@ -208,7 +207,10 @@ flush_spans(struct setup_context *setup)
    const int minleft = block_x(MIN2(xleft0, xleft1));
    const int maxright = MAX2(xright0, xright1);
    int x;
-
+//--OGPU
+ogpu_q=0;
+ogpu_list_q=0;
+//--
    /* process quads in horizontal chunks of 16 */
    for (x = minleft; x < maxright; x += step) {
       unsigned skip_left0 = CLAMP(xleft0 - x, 0, step);
@@ -251,8 +253,12 @@ flush_spans(struct setup_context *setup)
          pipe->run( pipe, setup->quad_ptrs, q );
       }
    }
-
-
+//--OGPU
+unsigned q;
+for(q=0;q<ogpu_list_q;q++){
+    pipe->next->run(pipe->next, ogpu_list[q].quad_ptrs_list,ogpu_list[q].nr);
+}
+//--
    setup->span.y = 0;
    setup->span.right[0] = 0;
    setup->span.right[1] = 0;
@@ -379,8 +385,8 @@ setup_sort_vertices(struct setup_context *setup,
     *  - two-sided stencil test
     * 0 = front-facing, 1 = back-facing
     */
-   setup->facing = 
-      ((det < 0.0) ^ 
+   setup->facing =
+      ((det < 0.0) ^
        (setup->softpipe->rasterizer->front_ccw));
 
    {
@@ -821,7 +827,7 @@ sp_setup_tri(struct setup_context *setup,
 
    if (setup->softpipe->no_rast || setup->softpipe->rasterizer->rasterizer_discard)
       return;
-   
+
    det = calc_det(v0, v1, v2);
    /*
    debug_printf("%s\n", __FUNCTION__ );
